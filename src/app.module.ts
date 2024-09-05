@@ -4,6 +4,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
+import { Songs } from './entities/songs.entity';
+import { Posts } from './entities/posts.entity';
+import { Users } from './entities/users.entity';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -22,10 +26,12 @@ import { AppService } from './app.service';
         username: configService.get('DB_USER'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
+        entities: [Songs, Posts, Users],
         synchronize: true,
         autoLoadEntities: true,
       }),
     }),
+    TypeOrmModule.forFeature([Songs, Posts, Users]),
   ],
   controllers: [AppController],
   providers: [AppService],
