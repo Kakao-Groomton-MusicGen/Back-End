@@ -8,6 +8,9 @@ import { AppService } from './app.service';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: [
+        `env/.env${process.env.NODE_ENV === 'production' ? '.production' : '.development'}`
+      ]
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -15,7 +18,7 @@ import { AppService } from './app.service';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         host: configService.get('DB_HOST'),
-        port: configService.get('DB_PORT'),
+        port: +configService.get<number>('DB_PORT'),
         username: configService.get('DB_USER'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
