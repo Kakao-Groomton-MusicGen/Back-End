@@ -76,9 +76,9 @@ export class PostsService {
           title: post.title,
           contents: post.contents,
           user: post.user,
-          song: { id: post.song.id },
+          song: post.song ? { id: post.song.id } : null,
           created_at: post.created_at,
           updated_at: post.updated_at,
         };
-      }
+    }
 }
