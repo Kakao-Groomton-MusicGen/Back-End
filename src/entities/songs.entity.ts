@@ -1,3 +1,4 @@
+import { IsNotEmpty } from 'class-validator';
 import { Entity, Column, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
@@ -6,6 +7,7 @@ export class Songs {
     id: number;
 
     @Column()
+    @IsNotEmpty()
     title: string;
 
     @Column()
@@ -15,6 +17,7 @@ export class Songs {
     style: string;
 
     @Column()
+    @IsNotEmpty()
     link: string;
 
     @CreateDateColumn()
