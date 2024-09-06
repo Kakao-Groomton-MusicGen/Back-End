@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
 import { Users } from './users.entity';
 import { Songs } from './songs.entity';
 
@@ -18,4 +18,10 @@ export class Posts {
 
   @ManyToOne(() => Songs, song => song.id)
   song: Songs;
+
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
 }
