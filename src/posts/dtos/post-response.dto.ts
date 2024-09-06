@@ -1,4 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { Songs } from "src/entities/songs.entity";
+import { DeepPartial } from "typeorm";
 
 export class PostResponseDto {
     @ApiProperty()
@@ -8,17 +10,17 @@ export class PostResponseDto {
     title: string;
   
     @ApiProperty()
-    content: string;
+    contents: string;
   
     @ApiProperty()
-    nickname: string;
+    user: string;
   
     @ApiProperty()
-    songId: number;
+    song: DeepPartial<Songs>;
   
     @ApiProperty()
-    createdAt: Date;
+    created_at: Date;
   
     @ApiProperty()
-    updatedAt: Date;
+    updated_at: Date;
   }

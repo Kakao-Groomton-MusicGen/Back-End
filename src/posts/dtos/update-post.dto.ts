@@ -8,7 +8,7 @@ export class UpdatePostDto {
   
     @ApiProperty({ description: '수정할 게시글 내용', required: false })
     @IsString()
-    content?: string;
+    contents?: string;
   
     @ApiProperty({ description: '게시글 비밀번호', minLength: 6 })
     @IsNotEmpty()

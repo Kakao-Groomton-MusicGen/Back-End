@@ -1,5 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsString, IsNumber, MinLength } from "class-validator";
+import { Songs } from "src/entities/songs.entity";
+import { DeepPartial } from "typeorm";
 
 export class CreatePostDto {
     @ApiProperty({ description: '게시글 제목' })
@@ -8,7 +10,7 @@ export class CreatePostDto {
   
     @ApiProperty({ description: '게시글 내용' })
     @IsString()
-    content: string;
+    contents: string;
 
     @ApiProperty({ description: '게시글 작성자' })
     @IsNotEmpty({ message: '게시글 작성자를 입력해주세요.' })
@@ -24,5 +26,5 @@ export class CreatePostDto {
     @ApiProperty({ description: '만든 음악 ID' })
     @IsNotEmpty()
     @IsNumber()
-    songId: number;
+    song: DeepPartial<Songs>;
 }
