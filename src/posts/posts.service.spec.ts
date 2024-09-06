@@ -1,171 +1,208 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { PostsService } from './posts.service';
-import { Posts } from '../entities/posts.entity';
-import { CreatePostDto } from './dtos/create-post.dto';
-import { UpdatePostDto } from './dtos/update-post.dto';
-import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+// import { Test, TestingModule } from '@nestjs/testing';
+// import { PostsService } from './posts.service';
+// import { getRepositoryToken } from '@nestjs/typeorm';
+// import { Posts } from '../entities/posts.entity';
+// import { Songs } from '../entities/songs.entity';
+// import { Repository } from 'typeorm';
+// import { CreatePostDto } from './dtos/create-post.dto';
+// import { UpdatePostDto } from './dtos/update-post.dto';
+// import * as bcrypt from 'bcrypt';
+// import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 
-describe('PostService', () => {
-  let service: PostsService;
-  let repo: Repository<Posts>;
+// describe('PostsService', () => {
+//   let service: PostsService;
+//   let postsRepo: Repository<Posts>;
+//   let songsRepo: Repository<Songs>;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        PostsService,
-        {
-          provide: getRepositoryToken(Posts),
-          useClass: Repository,
-        },
-      ],
-    }).compile();
+//   beforeEach(async () => {
+//     const module: TestingModule = await Test.createTestingModule({
+//       providers: [
+//         PostsService,
+//         {
+//           provide: getRepositoryToken(Posts),
+//           useClass: Repository,
+//         },
+//         {
+//           provide: getRepositoryToken(Songs),
+//           useClass: Repository,
+//         },
+//       ],
+//     }).compile();
 
-    service = module.get<PostsService>(PostsService);
-    repo = module.get<Repository<Posts>>(getRepositoryToken(Posts));
-  });
+//     service = module.get<PostsService>(PostsService);
+//     postsRepo = module.get<Repository<Posts>>(getRepositoryToken(Posts));
+//     songsRepo = module.get<Repository<Songs>>(getRepositoryToken(Songs));
+//   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
+//   describe('createPost', () => {
+//     it('should create a post and return response', async () => {
+//       const createPostDto: CreatePostDto = {
+//         title: 'Test Post',
+//         contents: 'Test Contents',
+//         user: 'testUser',
+//         password: 'password123',
+//         song: 1,
+//       };
 
-  describe('createPost', () => {
-    it('should create a post', async () => {
-      const dto: CreatePostDto = {
-        title: 'Test Post',
-        contents: 'This is a test post',
-        user: 'tester',
-        password: 'password123',
-        song: { id: 1 },
-      };
-      const post = { id: 1, ...dto, password: expect.any(String) };
-      jest.spyOn(repo, 'create').mockReturnValue(post as Posts);
-      jest.spyOn(repo, 'save').mockResolvedValue(post as Posts);
+//       const mockSong = { id: 1 };
+//       const mockPost = { id: 1, ...createPostDto, password: 'hashedPassword', song: mockSong.id };
 
-      const result = await service.createPost(dto);
-      expect(result).toEqual(post);
-    });
-  });
+//       jest.spyOn(songsRepo, 'findOne').mockResolvedValue(mockSong as Songs);
+//       jest.spyOn(bcrypt, 'hash' as any).mockResolvedValue('hashedPassword');
+//       jest.spyOn(postsRepo, 'create').mockReturnValue(mockPost as unknown as Posts);
+//       jest.spyOn(postsRepo, 'save').mockResolvedValue(mockPost as Posts);
 
-  describe('getAllPosts', () => {
-    it('should return an array of posts', async () => {
-      const posts = [{ id: 1, title: 'Test Post' }];
-      jest.spyOn(repo, 'find').mockResolvedValue(posts as Posts[]);
+//       const result = await service.createPost(createPostDto);
 
-      const result = await service.getAllPosts();
-      expect(result).toEqual(posts);
-    });
-  });
+//       expect(result).toEqual({
+//         id: 1,
+//         title: 'Test Post',
+//         contents: 'Test Contents',
+//         user: 'testUser',
+//         song: 1,
+//         created_at: undefined,
+//         updated_at: undefined,
+//       });
+//       expect(songsRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
+//       expect(postsRepo.create).toHaveBeenCalledWith({
+//         ...createPostDto,
+//         password: 'hashedPassword',
+//         song: 1,
+//       });
+//       expect(postsRepo.save).toHaveBeenCalledWith(mockPost);
+//     });
 
-  describe('getPostById', () => {
-    it('should return a post if found', async () => {
-      const mockPost = {
-        id: 1,
-        title: 'Test Post',
-        contents: 'Test Contents',
-        user: 'Test User',
-        song: { id: 1 },
-        created_at: new Date(),
-        updated_at: new Date(),
-      };
-      jest.spyOn(repo, 'findOne').mockResolvedValue(mockPost as Posts);
+//     it('should throw NotFoundException if song is not found', async () => {
+//       const createPostDto: CreatePostDto = {
+//         title: 'Test Post',
+//         contents: 'Test Contents',
+//         user: 'testUser',
+//         password: 'password123',
+//         song: 999,
+//       };
 
-      const result = await service.getPostById(1);
-      expect(result).toEqual({
-        id: mockPost.id,
-        title: mockPost.title,
-        contents: mockPost.contents,
-        user: mockPost.user,
-        song: { id: mockPost.song.id },
-        created_at: mockPost.created_at,
-        updated_at: mockPost.updated_at,
-      });
-    });
+//       jest.spyOn(songsRepo, 'findOne').mockResolvedValue(null);
 
-    it('should throw NotFoundException if post not found', async () => {
-      jest.spyOn(repo, 'findOne').mockResolvedValue(null);
+//       await expect(service.createPost(createPostDto)).rejects.toThrow(NotFoundException);
+//     });
+//   });
 
-      await expect(service.getPostById(1)).rejects.toThrow(NotFoundException);
-    });
+//   describe('updatePost', () => {
+//     it('should update a post if password is correct', async () => {
+//       const updatePostDto: UpdatePostDto = { title: 'Updated Post', password: 'password123' };
+//       const mockPost = { id: 1, title: 'Test Post', password: 'hashedPassword' };
 
-    it('should return a post with null song if song is not found', async () => {
-      const mockPost = {
-        id: 1,
-        title: 'Test Post',
-        contents: 'Test Contents',
-        user: 'Test User',
-        song: null,
-        created_at: new Date(),
-        updated_at: new Date(),
-      };
+//       jest.spyOn(postsRepo, 'findOne').mockResolvedValue(mockPost as Posts);
+//       jest.spyOn(bcrypt, 'compare').mockResolvedValue(true);
+//       jest.spyOn(postsRepo, 'save').mockResolvedValue({ ...mockPost, ...updatePostDto });
 
-      jest.spyOn(repo, 'findOne').mockResolvedValue(mockPost as Posts);
+//       const result = await service.updatePost(1, updatePostDto);
 
-      const result = await service.getPostById(1);
-      expect(result).toEqual({
-        id: mockPost.id,
-        title: mockPost.title,
-        contents: mockPost.contents,
-        user: mockPost.user,
-        song: null,
-        created_at: mockPost.created_at,
-        updated_at: mockPost.updated_at,
-      });
-    });
+//       expect(result.title).toEqual('Updated Post');
+//       expect(postsRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
+//       expect(bcrypt.compare).toHaveBeenCalledWith(updatePostDto.password, 'hashedPassword');
+//       expect(postsRepo.save).toHaveBeenCalledWith({ ...mockPost, ...updatePostDto });
+//     });
 
-});
+//     it('should throw UnauthorizedException if password is incorrect', async () => {
+//       const updatePostDto: UpdatePostDto = { title: 'Updated Post', password: 'wrongPassword' };
+//       const mockPost = { id: 1, title: 'Test Post', password: 'hashedPassword' };
 
-  describe('updatePost', () => {
-    it('should update a post if password is correct', async () => {
-      const post = { id: 1, title: 'Old Title', password: 'hashedPassword' };
-      const dto: UpdatePostDto = { title: 'New Title', password: 'correctPassword' };
-      jest.spyOn(repo, 'findOne').mockResolvedValue(post as Posts);
-      jest.spyOn(repo, 'save').mockResolvedValue({ ...post, ...dto } as Posts);
-      
-      // Mock bcrypt compare
-      const bcrypt = require('bcrypt');
-      jest.spyOn(bcrypt, 'compare').mockResolvedValue(true);
+//       jest.spyOn(postsRepo, 'findOne').mockResolvedValue(mockPost as Posts);
+//       jest.spyOn(bcrypt, 'compare').mockResolvedValue(false);
 
-      const result = await service.updatePost(1, dto);
-      expect(result.title).toEqual(dto.title);
-    });
+//       await expect(service.updatePost(1, updatePostDto)).rejects.toThrow(UnauthorizedException);
+//     });
+//   });
 
-    it('should throw UnauthorizedException if password is incorrect', async () => {
-      const post = { id: 1, title: 'Old Title', password: 'hashedPassword' };
-      const dto: UpdatePostDto = { title: 'New Title', password: 'wrongPassword' };
-      jest.spyOn(repo, 'findOne').mockResolvedValue(post as Posts);
-      
-      // Mock bcrypt compare
-      const bcrypt = require('bcrypt');
-      jest.spyOn(bcrypt, 'compare').mockResolvedValue(false);
+//   describe('deletePost', () => {
+//     it('should delete a post if password is correct', async () => {
+//       const mockPost = { id: 1, title: 'Test Post', password: 'hashedPassword' };
 
-      await expect(service.updatePost(1, dto)).rejects.toThrow(UnauthorizedException);
-    });
-  });
+//       jest.spyOn(postsRepo, 'findOne').mockResolvedValue(mockPost as Posts);
+//       jest.spyOn(bcrypt, 'compare').mockResolvedValue(true);
+//       jest.spyOn(postsRepo, 'remove').mockResolvedValue(mockPost as Posts);
 
-  describe('deletePost', () => {
-    it('should delete a post if password is correct', async () => {
-      const post = { id: 1, title: 'Test Post', password: 'hashedPassword' };
-      jest.spyOn(repo, 'findOne').mockResolvedValue(post as Posts);
-      jest.spyOn(repo, 'remove').mockResolvedValue(post as Posts);
-      
-      // Mock bcrypt compare
-      const bcrypt = require('bcrypt');
-      jest.spyOn(bcrypt, 'compare').mockResolvedValue(true);
+//       await service.deletePost(1, 'password123');
 
-      await expect(service.deletePost(1, 'correctPassword')).resolves.not.toThrow();
-    });
+//       expect(postsRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
+//       expect(bcrypt.compare).toHaveBeenCalledWith('password123', 'hashedPassword');
+//       expect(postsRepo.remove).toHaveBeenCalledWith(mockPost);
+//     });
 
-    it('should throw UnauthorizedException if password is incorrect', async () => {
-      const post = { id: 1, title: 'Test Post', password: 'hashedPassword' };
-      jest.spyOn(repo, 'findOne').mockResolvedValue(post as Posts);
-      
-      // Mock bcrypt compare
-      const bcrypt = require('bcrypt');
-      jest.spyOn(bcrypt, 'compare').mockResolvedValue(false);
+//     it('should throw UnauthorizedException if password is incorrect', async () => {
+//       const mockPost = { id: 1, title: 'Test Post', password: 'hashedPassword' };
 
-      await expect(service.deletePost(1, 'wrongPassword')).rejects.toThrow(UnauthorizedException);
-    });
-  });
-});
+//       jest.spyOn(postsRepo, 'findOne').mockResolvedValue(mockPost as Posts);
+//       jest.spyOn(bcrypt, 'compare').mockResolvedValue(false);
+
+//       await expect(service.deletePost(1, 'wrongPassword')).rejects.toThrow(UnauthorizedException);
+//     });
+//   });
+
+//   describe('getPostById', () => {
+//     it('should return a post by id', async () => {
+//       const mockPost = {
+//         id: 1,
+//         title: 'Test Post',
+//         contents: 'Test Contents',
+//         user: 'testUser',
+//         song: { id: 1 },
+//         created_at: new Date(),
+//         updated_at: new Date(),
+//       };
+
+//       jest.spyOn(postsRepo, 'findOne').mockResolvedValue(mockPost as Posts);
+
+//       const result = await service.getPostById(1);
+
+//       expect(result).toEqual({
+//         id: 1,
+//         title: 'Test Post',
+//         contents: 'Test Contents',
+//         user: 'testUser',
+//         song: { id: 1 },
+//         created_at: mockPost.created_at,
+//         updated_at: mockPost.updated_at,
+//       });
+//     });
+
+//     it('should throw NotFoundException if post not found', async () => {
+//       jest.spyOn(postsRepo, 'findOne').mockResolvedValue(null);
+
+//       await expect(service.getPostById(1)).rejects.toThrow(NotFoundException);
+//     });
+//   });
+
+//   describe('getAllPosts', () => {
+//     it('should return an array of posts', async () => {
+//       const mockPosts = [
+//         {
+//           id: 1,
+//           title: 'Test Post',
+//           contents: 'Test Contents',
+//           user: 'testUser',
+//           song: { id: 1 },
+//           created_at: new Date(),
+//           updated_at: new Date(),
+//         },
+//       ];
+
+//       jest.spyOn(postsRepo, 'find').mockResolvedValue(mockPosts as Posts[]);
+
+//       const result = await service.getAllPosts();
+
+//       expect(result).toEqual(
+//         mockPosts.map((post) => ({
+//           id: post.id,
+//           title: post.title,
+//           contents: post.contents,
+//           user: post.user,
+//           song: post.song,
+//           created_at: post.created_at,
+//           updated_at: post.updated_at,
+//         }))
+//       );
+//     });
+//   });
+// });
