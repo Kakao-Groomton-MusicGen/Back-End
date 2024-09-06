@@ -7,22 +7,20 @@ COPY package*.json ./
 
 RUN npm install
 
-RUN npm install -g @nestjs/cli
-
 COPY . .
 
 RUN npm run build
 # RUN npm run test
 
-FROM node:20-alpine AS production
+# FROM node:20-alpine AS production
 
-WORKDIR /app
+# WORKDIR /app
 
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/env ./env
+# COPY --from=builder /app/dist ./dist
+# COPY --from=builder /app/package*.json ./
+# COPY --from=builder /app/env ./env
 
-RUN npm install --only=production
+# RUN npm install --only=production
 
 EXPOSE 3000
 
