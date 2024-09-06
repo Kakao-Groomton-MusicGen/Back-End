@@ -25,7 +25,7 @@ export class PostsService {
         return this.postsRepository.save(post);
     }
 
-    async updatePost(id: number, updatePostDto: UpdatePostDto): Promise<Posts> {
+    async updatePost(id: number, updatePostDto: UpdatePostDto): Promise<PostResponseDto> {
         const post = await this.postsRepository.findOne({ where: { id } });
 
         if (!post) {
@@ -36,8 +36,8 @@ export class PostsService {
             throw new UnauthorizedException('Invalid password');
         }
 
-          const { password, ...rest } = updatePostDto;
-          Object.assign(post, rest);
+        const { password, ...rest } = updatePostDto;
+        Object.assign(post, rest);
 
         return this.postsRepository.save(post);
     }
@@ -66,7 +66,7 @@ export class PostsService {
         return this.toResponseDto(post);
     }
 
-    async getAllPosts(): Promise<Posts[]> {
+    async getAllPosts(): Promise<PostResponseDto[]> {
         return this.postsRepository.find();
     }
 
