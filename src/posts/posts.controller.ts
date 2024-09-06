@@ -15,7 +15,7 @@ export class PostsController {
     @ApiOperation({ summary: '게시글 생성 API' })
     @ApiResponse({ status: 201, description: '게시글 생성 성공', type: PostResponseDto })
     @ApiBody({ type: CreatePostDto })
-    async createPost(@Body() createPostDto: CreatePostDto): Promise<CreatePostDto> {
+    async createPost(@Body() createPostDto: CreatePostDto): Promise<PostResponseDto> {
         return this.postsService.createPost(createPostDto);
     }
 
