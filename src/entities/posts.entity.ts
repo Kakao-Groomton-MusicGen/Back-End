@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
 import { Songs } from './songs.entity';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 
 @Entity()
 export class Posts {
@@ -13,12 +14,16 @@ export class Posts {
   contents: string;
 
   @Column()
+  @IsNotEmpty()
   user: string;
 
   @Column()
+  @IsNotEmpty()
   password: string;
 
   @ManyToOne(() => Songs, song => song.id)
+  @IsNotEmpty()
+  @IsNumber()
   song: Songs;
 
   @CreateDateColumn()
