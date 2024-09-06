@@ -13,7 +13,7 @@ export class Posts {
   @Column({ nullable: true })
   contents: string;
 
-  @Column()
+  @Column({ default: "Anonymous" })
   @IsNotEmpty()
   user: string;
 
