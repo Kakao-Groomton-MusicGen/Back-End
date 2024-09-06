@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, HttpCode, HttpStatus, HttpException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, HttpCode, HttpStatus, HttpException, NotFoundException } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dtos/create-post.dto';
@@ -64,7 +64,14 @@ export class PostsController {
     @ApiParam({ name: 'id', description: '조회할 게시글 ID' })
     @ApiResponse({ status: 200, description: '게시글 조회 성공', type: PostResponseDto })
     @ApiResponse({ status: 404, description: '게시글 없음' })
+    // async getPostById(@Param('id') id: number): Promise<PostResponseDto> {
+    //     return this.postsService.getPostById(id);
+    // }
     async getPostById(@Param('id') id: number): Promise<PostResponseDto> {
-        return this.postsService.getPostById(id);
+        const post = await this.postsService.getPostById(id);
+        if (!post) {
+            throw new NotFoundException(`Post with id ${id} not found`);
+        }
+        return post;
     }
 }
