@@ -17,7 +17,7 @@ export class Posts {
   @IsNotEmpty()
   user: string;
 
-  @Column()
+  @Column({ default: "123456" })
   @IsNotEmpty()
   password: string;
 
