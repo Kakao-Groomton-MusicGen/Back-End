@@ -16,7 +16,7 @@ export class Songs {
     @Column()
     style: string;
 
-    @Column()
+    @Column({ default: 'https://hackathon-mute-backend.s3.ap-northeast-2.amazonaws.com/test.txt' })
     @IsNotEmpty()
     link: string;
 
