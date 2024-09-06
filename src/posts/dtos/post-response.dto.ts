@@ -16,7 +16,7 @@ export class PostResponseDto {
     user: string;
   
     @ApiProperty()
-    song: DeepPartial<Songs>;
+    song: DeepPartial<Songs["id"]>;
   
     @ApiProperty()
     created_at: Date;

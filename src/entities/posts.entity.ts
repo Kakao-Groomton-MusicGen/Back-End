@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
 import { Songs } from './songs.entity';
 import { IsNotEmpty, IsNumber } from 'class-validator';
+import { DeepPartial } from 'typeorm';
 
 @Entity()
 export class Posts {
@@ -17,14 +18,14 @@ export class Posts {
   @IsNotEmpty()
   user: string;
 
-  @Column()
+  @Column({ default: "123456" })
   @IsNotEmpty()
   password: string;
 
   @ManyToOne(() => Songs, song => song.id)
   @IsNotEmpty()
   @IsNumber()
-  song: Songs;
+  song: DeepPartial<Songs["id"]>
 
   @CreateDateColumn()
   created_at: Date;

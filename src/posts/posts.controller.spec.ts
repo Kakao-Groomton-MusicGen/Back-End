@@ -4,7 +4,7 @@ import { PostsService } from './posts.service';
 import { CreatePostDto } from './dtos/create-post.dto';
 import { UpdatePostDto } from './dtos/update-post.dto';
 import { PostResponseDto } from './dtos/post-response.dto';
-import exp from 'constants';
+import { NotFoundException } from '@nestjs/common/exceptions';
 
 describe('PostController', () => {
   let controller: PostsController;
@@ -42,14 +42,14 @@ describe('PostController', () => {
         contents: 'This is a test post',
         user: 'tester',
         password: 'password123',
-        song: { id: 1 },
+        song: 1,
       };
       const createdPost: PostResponseDto = {
         id: 1,
         title: 'Test Post',
         contents: 'This is a test post',
         user: 'tester',
-        song: { id: 1 },
+        song: 1,
         created_at: new Date(),
         updated_at: new Date(),
       };
@@ -63,15 +63,15 @@ describe('PostController', () => {
 
   describe('getAllPosts', () => {
     it('should return an array of posts', async () => {
-        const posts: PostResponseDto[] = [{
-            id: 1,
-            title: 'Test Post',
-            contents: 'This is a test post',
-            user: 'tester',
-            song: { id: 1 },
-            created_at: new Date(),
-            updated_at: new Date(),
-          }];
+      const posts: PostResponseDto[] = [{
+        id: 1,
+        title: 'Test Post',
+        contents: 'This is a test post',
+        user: 'tester',
+        song: 1,
+        created_at: new Date(),
+        updated_at: new Date(),
+      }];
       jest.spyOn(service, 'getAllPosts').mockResolvedValue(posts);
 
       const result = await controller.getAllPosts();
@@ -82,39 +82,45 @@ describe('PostController', () => {
 
   describe('getPostById', () => {
     it('should return a post by id', async () => {
-        const post: PostResponseDto = {
-            id: 1,
-            title: 'Test Post',
-            contents: 'This is a test post',
-            user: 'tester',
-            song: { id: 1 },
-            created_at: new Date(),
-            updated_at: new Date(),
-          };
+      const post: PostResponseDto = {
+        id: 1,
+        title: 'Test Post',
+        contents: 'This is a test post',
+        user: 'tester',
+        song: 1,
+        created_at: new Date(),
+        updated_at: new Date(),
+      };
       jest.spyOn(service, 'getPostById').mockResolvedValue(post);
 
       const result = await controller.getPostById(1);
       expect(result).toEqual(post);
       expect(service.getPostById).toHaveBeenCalledWith(1);
     });
-  });
+
+    it('should throw a NotFoundException if post does not exist', async () => {
+      jest.spyOn(service, 'getPostById').mockResolvedValue(null);
+    
+      await expect(controller.getPostById(999)).rejects.toThrow(NotFoundException);  // 정확히 NotFoundException을 검출
+      expect(service.getPostById).toHaveBeenCalledWith(999);
+    });
 
   describe('updatePost', () => {
     it('should update a post', async () => {
       const dto: UpdatePostDto = { title: 'Updated Title', password: 'password123' };
-      const expectedResult: PostResponseDto = {
+      const updatedPost: PostResponseDto = {
         id: 1,
-        title: 'Test Post',
+        title: 'Updated Title',
         contents: 'This is a test post',
         user: 'tester',
-        song: { id: 1 },
+        song: 1,
         created_at: new Date(),
         updated_at: new Date(),
       };
-      jest.spyOn(service, 'updatePost').mockResolvedValue(expectedResult);
+      jest.spyOn(service, 'updatePost').mockResolvedValue(updatedPost);
 
       const result = await controller.updatePost(1, dto);
-      expect(result).toEqual(expectedResult);
+      expect(result).toEqual(updatedPost);
       expect(service.updatePost).toHaveBeenCalledWith(1, dto);
     });
   });
@@ -127,4 +133,5 @@ describe('PostController', () => {
       expect(service.deletePost).toHaveBeenCalledWith(1, 'password123');
     });
   });
+});
 });

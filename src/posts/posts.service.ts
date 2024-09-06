@@ -28,7 +28,7 @@ export class PostsService {
         const post = this.postsRepository.create({
             ...rest,
             password: hashedPassword,
-            song: songEntity,
+            song: song_id as number,
         });
 
         const savedPost = await this.postsRepository.save(post);
@@ -50,7 +50,9 @@ export class PostsService {
         const { password, ...rest } = updatePostDto;
         Object.assign(post, rest);
 
-        return this.postsRepository.save(post);
+        const updatedPost = await this.postsRepository.save(post);
+
+        return this.toResponseDto(updatedPost);
     }
 
     deletePost = async (id: number, password: string): Promise<void> => {
@@ -78,7 +80,8 @@ export class PostsService {
     }
 
     async getAllPosts(): Promise<PostResponseDto[]> {
-        return this.postsRepository.find();
+        const posts = await this.postsRepository.find();
+        return posts.map(post => this.toResponseDto(post));
     }
 
     private toResponseDto(post: Posts): PostResponseDto {
@@ -87,7 +90,7 @@ export class PostsService {
           title: post.title,
           contents: post.contents,
           user: post.user,
-          song: post.song ? { id: post.song.id } : null,
+          song: post.song ? post.song : null,
           created_at: post.created_at,
           updated_at: post.updated_at,
         };
