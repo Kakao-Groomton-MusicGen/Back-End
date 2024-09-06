@@ -3,12 +3,10 @@ import { IsNotEmpty, IsString, IsNumber, MinLength } from "class-validator";
 
 export class CreatePostDto {
     @ApiProperty({ description: '게시글 제목' })
-    @IsNotEmpty({ message: '게시글 제목을 입력해주세요.' })
     @IsString()
     title: string;
   
     @ApiProperty({ description: '게시글 내용' })
-    @IsNotEmpty({ message: '게시글 내용을 입력해주세요.' })
     @IsString()
     content: string;
 
@@ -17,7 +15,7 @@ export class CreatePostDto {
     @IsString()
     user: string;
 
-    @ApiProperty({ description: '게시글 비밀번호', minLength: 6 })
+    @ApiProperty({ description: '작성자 비밀번호', minLength: 6 })
     @IsNotEmpty()
     @IsString()
     @MinLength(6, { message: '비밀번호는 6자 이상이어야 합니다.' })
