@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import * as bcrypt from "bcrypt";
 import { Posts } from "../entities/posts.entity";
+import { Songs } from "../entities/songs.entity";
 import { CreatePostDto } from "./dtos/create-post.dto";
 import { UpdatePostDto } from "./dtos/update-post.dto";
 import { PostResponseDto } from "./dtos/post-response.dto";
@@ -12,17 +13,27 @@ export class PostsService {
     constructor(
         @InjectRepository(Posts)
         private postsRepository: Repository<Posts>,
+        @InjectRepository(Songs)
+        private songsRepository: Repository<Songs>,
     ) {}
 
     async createPost(createPostDto: CreatePostDto): Promise<PostResponseDto> {
-        const { password, ...rest } = createPostDto;
+        const { song, password, ...rest } = createPostDto;
+        const song_id = await this.songsRepository.findOne({ where: { id: song.id } });
+        if (!song) {
+            throw new NotFoundException(`Song with ID ${song_id} not found`);
+        }
+        
         const hashedPassword = await bcrypt.hash(password, 10);
         const post = this.postsRepository.create({
             ...rest,
             password: hashedPassword,
+            song: song,
         });
 
-        return this.postsRepository.save(post);
+        const savedPost = await this.postsRepository.save(post);
+
+        return this.toResponseDto(savedPost);
     }
 
     async updatePost(id: number, updatePostDto: UpdatePostDto): Promise<PostResponseDto> {
@@ -57,7 +68,7 @@ export class PostsService {
     }
 
     async getPostById(id: number): Promise<PostResponseDto> {
-        const post = await this.postsRepository.findOne({ where: { id } });
+        const post = await this.postsRepository.findOne({ where: { id }, relations: ['song'] });
 
         if (!post) {
             throw new NotFoundException(`Post with id: ${id} not found`);

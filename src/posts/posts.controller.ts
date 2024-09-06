@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, HttpCode, HttpStatus, HttpException } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dtos/create-post.dto';
@@ -14,9 +14,20 @@ export class PostsController {
     @Post()
     @ApiOperation({ summary: '게시글 생성 API' })
     @ApiResponse({ status: 201, description: '게시글 생성 성공', type: PostResponseDto })
+    @ApiResponse({ status: 404, description: '존재하지 않는 노래' })
+    @ApiResponse({ status: 400, description: '잘못된 요청' })
     @ApiBody({ type: CreatePostDto })
     async createPost(@Body() createPostDto: CreatePostDto): Promise<PostResponseDto> {
-        return this.postsService.createPost(createPostDto);
+        try{
+            return await this.postsService.createPost(createPostDto);
+        }
+        catch(err) {
+            if (err instanceof HttpException) {
+                throw err;
+            }
+            console.error('Unexpected Error:', err);
+            throw new HttpException('게시글 생성 중 오류 발생', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Put(':id')

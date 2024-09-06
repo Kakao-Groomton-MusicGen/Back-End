@@ -26,5 +26,5 @@ export class CreatePostDto {
     @ApiProperty({ description: '만든 음악 ID' })
     @IsNotEmpty()
     @IsNumber()
-    song: DeepPartial<Songs>;
+    song: DeepPartial<Songs["id"]>;
 }
