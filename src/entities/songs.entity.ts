@@ -9,5 +9,14 @@ export class Songs {
     title: string;
 
     @Column()
+    keywords: string;
+
+    @Column()
+    style: string;
+
+    @Column()
     link: string;
+
+    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    created_at: Date;
 }

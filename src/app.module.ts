@@ -1,9 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Songs } from './entities/songs.entity';
-import { Users } from './entities/users.entity';
-import { Posts } from './entities/posts.entity';
+import { SongsModule } from './songs/songs.module';
 
 @Module({
   imports: [
@@ -33,12 +31,12 @@ import { Posts } from './entities/posts.entity';
           ssl: {
             rejectUnauthorized: false, // SSL 인증서를 검증하지 않도록 설정 (보안상 주의)
           },
-          entities: [Songs, Users, Posts],
+          entities: [__dirname + '/**/*.entity{.ts,.js}'],
           synchronize: true,
         };
       },
     }),
-    TypeOrmModule.forFeature([Songs, Users, Posts]),
+    SongsModule,
   ],
 })
 export class AppModule {}
