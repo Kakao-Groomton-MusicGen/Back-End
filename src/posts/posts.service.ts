@@ -18,9 +18,9 @@ export class PostsService {
     ) {}
 
     async createPost(createPostDto: CreatePostDto): Promise<PostResponseDto> {
-        const { song, password, ...rest } = createPostDto;
-        const song_id = await this.songsRepository.findOne({ where: { id: song.id } });
-        if (!song) {
+        const { song: song_id, password, ...rest } = createPostDto;
+        const songEntity = await this.songsRepository.findOne({ where: { id: song_id as number } });
+        if (!songEntity) {
             throw new NotFoundException(`Song with ID ${song_id} not found`);
         }
         
@@ -28,7 +28,7 @@ export class PostsService {
         const post = this.postsRepository.create({
             ...rest,
             password: hashedPassword,
-            song: song,
+            song: songEntity,
         });
 
         const savedPost = await this.postsRepository.save(post);
