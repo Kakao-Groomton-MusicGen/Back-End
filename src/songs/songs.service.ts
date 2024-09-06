@@ -19,9 +19,12 @@ export class SongsService {
 
     async createSong(createSongDto: CreateSongDto): Promise<SongResponseDto> {
         const aiServerUrl = this.configService.get<string>('AI_SERVER_URL');
+        const aiServerPort = this.configService.get<string>('AI_SERVER_PORT');
+
+        const fullAiServerUrl = `${aiServerUrl}:${aiServerPort}`;
 
         const aiResponse = await firstValueFrom(
-            this.httpService.post(aiServerUrl, createSongDto)
+            this.httpService.post(fullAiServerUrl, createSongDto)
         );
 
         const s3Link = aiResponse.data.link;
