@@ -60,11 +60,27 @@ describe('PostService', () => {
 
   describe('getPostById', () => {
     it('should return a post if found', async () => {
-      const post = { id: 1, title: 'Test Post' };
-      jest.spyOn(repo, 'findOne').mockResolvedValue(post as Posts);
+      const mockPost = {
+        id: 1,
+        title: 'Test Post',
+        contents: 'Test Contents',
+        user: 'Test User',
+        song: { id: 1 },
+        created_at: new Date(),
+        updated_at: new Date(),
+      };
+      jest.spyOn(repo, 'findOne').mockResolvedValue(mockPost as Posts);
 
       const result = await service.getPostById(1);
-      expect(result).toEqual(post);
+      expect(result).toEqual({
+        id: mockPost.id,
+        title: mockPost.title,
+        contents: mockPost.contents,
+        user: mockPost.user,
+        song: { id: mockPost.song.id },
+        created_at: mockPost.created_at,
+        updated_at: mockPost.updated_at,
+      });
     });
 
     it('should throw NotFoundException if post not found', async () => {
@@ -72,7 +88,33 @@ describe('PostService', () => {
 
       await expect(service.getPostById(1)).rejects.toThrow(NotFoundException);
     });
-  });
+
+    it('should return a post with null song if song is not found', async () => {
+      const mockPost = {
+        id: 1,
+        title: 'Test Post',
+        contents: 'Test Contents',
+        user: 'Test User',
+        song: null,
+        created_at: new Date(),
+        updated_at: new Date(),
+      };
+
+      jest.spyOn(repo, 'findOne').mockResolvedValue(mockPost as Posts);
+
+      const result = await service.getPostById(1);
+      expect(result).toEqual({
+        id: mockPost.id,
+        title: mockPost.title,
+        contents: mockPost.contents,
+        user: mockPost.user,
+        song: null,
+        created_at: mockPost.created_at,
+        updated_at: mockPost.updated_at,
+      });
+    });
+
+});
 
   describe('updatePost', () => {
     it('should update a post if password is correct', async () => {
