@@ -1,5 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
-import { Users } from './users.entity';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
 import { Songs } from './songs.entity';
 
 @Entity()
@@ -13,9 +12,18 @@ export class Posts {
   @Column({ nullable: true })
   contents: string;
 
-  @ManyToOne(() => Users, user => user.id)
-  user: Users;
+  @Column()
+  user: string;
+
+  @Column()
+  password: string;
 
   @ManyToOne(() => Songs, song => song.id)
   song: Songs;
+
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
 }
