@@ -1,4 +1,4 @@
-import { Entity, Column, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Songs {
@@ -17,9 +17,6 @@ export class Songs {
     @Column()
     link: string;
 
-    @CreateDateColumn()
+    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     created_at: Date;
-
-    @UpdateDateColumn()
-    updated_at: Date;
 }
